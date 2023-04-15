@@ -19,44 +19,27 @@
             </Grid.RowDefinitions>
 
             <Label Text="{Binding Score, StringFormat='Score {0}'}" 
-                        FontSize="20"
-                        FontAttributes="Bold"
-                        HorizontalOptions="End"/>
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   HorizontalOptions="End"/>
             <Border Background="Black">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="7"/>
                 </Border.StrokeShape>
-                <GraphicsView Width="{Binding GameGridSize}" 
-                              Height="{Binding GameGridSize}">
-                    <!--<Ellipse DataContext="{Binding Fruit}"
-                                Canvas.Top="{Binding YPos}"
-                                Canvas.Left="{Binding XPos}"
-                                Width="{Binding Width}" Height="{Binding Height}"
-                                Fill="Red">
-                    </Ellipse>-->
+                <GraphicsView WidthRequest="{Binding GameGridSize}" 
+                              HeightRequest="{Binding GameGridSize}"
+                              x:Name="fruitGraphicsView">
+                    <GraphicsView.Drawable>
+                        <local:DrawableFruit x:Name="drawableFruit" />
+                    </GraphicsView.Drawable>
                 </GraphicsView>
             </Border>
-            <GraphicsView>
-                <!--<ItemsControl ItemsSource="{Binding Snake}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas Width="{Binding GameGridSize}" Height="{Binding GameGridSize}"  Background="Transparent"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemContainerStyle>
-                        <Style TargetType="ContentPresenter">
-                            <Setter Property="Canvas.Left" Value="{Binding XPos}" />
-                            <Setter Property="Canvas.Top" Value="{Binding YPos}" />
-                        </Style>
-                    </ItemsControl.ItemContainerStyle>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border>
-                                <Ellipse Width="{Binding Width}" Height="{Binding Height}" Fill="{Binding Rgb, Converter={converter:RgbArrayToSolidColorBrushConverter}}"/>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>-->
+            <GraphicsView WidthRequest="{Binding GameGridSize}" 
+                        HeightRequest="{Binding GameGridSize}"
+                        x:Name="snakeGraphicsView">
+                <GraphicsView.Drawable>
+                    <local:DrawableSnake x:Name="drawableSnake" />
+                </GraphicsView.Drawable>
             </GraphicsView>
 
             <local:MainMenuContentView Grid.Row="0" 

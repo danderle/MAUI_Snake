@@ -79,6 +79,13 @@ public partial class MainWindowViewModel : ObservableObject
 
     #endregion
 
+    #region Actions
+
+    public Action<CellViewModel> FruitChangedAction;
+    public Action<List<CellViewModel>> SnakeChangedAction;
+
+    #endregion
+
     #region Constructor
 
     public MainWindowViewModel()
@@ -121,7 +128,7 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private void Play()
     {
-        //CreateSnake();
+        CreateSnake();
         SpawnFruit();
         MainMenuVisible = false;
         GameOver = false;
@@ -162,6 +169,7 @@ public partial class MainWindowViewModel : ObservableObject
         var snakeHead = new CellViewModel(200, 200);
         snakeHead.Rgb = CellViewModel.SNAKE_HEAD_RGB;
         Snake.Add(snakeHead);
+        SnakeChangedAction?.Invoke(Snake.ToList());
     }
 
     /// <summary>
@@ -173,23 +181,24 @@ public partial class MainWindowViewModel : ObservableObject
         {
             Thread.Sleep(_snakeSpeed);
 
-            //if (_nextMoves.Any())
-            //{
-            //    var move = _nextMoves.Dequeue();
-            //    _currentDirection = move.Direction;
-            //    CheckIfSnakeEatSelf(move.Xpos, move.Ypos);
-            //    CheckIfSnakeHitWall(move.Xpos, move.Ypos);
-            //    if (!GameOver)
-            //    {
-            //        MoveSnake(move.Xpos, move.Ypos);
-            //    }
-            //}
-            //else
-            //{
-            //    MoveSnake();
-            //}
+            if (_nextMoves.Any())
+            {
+                var move = _nextMoves.Dequeue();
+                _currentDirection = move.Direction;
+                CheckIfSnakeEatSelf(move.Xpos, move.Ypos);
+                CheckIfSnakeHitWall(move.Xpos, move.Ypos);
+                if (!GameOver)
+                {
+                    MoveSnake(move.Xpos, move.Ypos);
+                }
+            }
+            else
+            {
+                MoveSnake();
+            }
 
-            //CheckIfFruitEaten();
+            SnakeChangedAction?.Invoke(Snake.ToList());
+            CheckIfFruitEaten();
         }
 
         var highScores = LoadHighScores(true);
@@ -428,6 +437,7 @@ public partial class MainWindowViewModel : ObservableObject
         }
 
         Snake.Insert(0, snakeSection);
+        SnakeChangedAction?.Invoke(Snake.ToList());
     }
 
     /// <summary>
@@ -446,6 +456,7 @@ public partial class MainWindowViewModel : ObservableObject
         } while (foundSection);
 
         Fruit = new CellViewModel(xPos, yPos);
+        FruitChangedAction?.Invoke(Fruit);
     }
 
     #endregion
