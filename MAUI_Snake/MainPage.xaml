@@ -22,30 +22,34 @@
                    FontSize="20"
                    FontAttributes="Bold"
                    HorizontalOptions="End"/>
-            <Border Background="Black">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="7"/>
-                </Border.StrokeShape>
+
+            <Grid VerticalOptions="Center">
+                <Border Background="Black"
+                        StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="7"/>
+                    </Border.StrokeShape>
+                    <GraphicsView WidthRequest="{Binding GameGridSize}" 
+                                  HeightRequest="{Binding GameGridSize}"
+                                  x:Name="fruitGraphicsView">
+                        <GraphicsView.Drawable>
+                            <local:DrawableFruit x:Name="drawableFruit" />
+                        </GraphicsView.Drawable>
+                    </GraphicsView>
+                </Border>
                 <GraphicsView WidthRequest="{Binding GameGridSize}" 
-                              HeightRequest="{Binding GameGridSize}"
-                              x:Name="fruitGraphicsView">
+                            HeightRequest="{Binding GameGridSize}"
+                            x:Name="snakeGraphicsView">
                     <GraphicsView.Drawable>
-                        <local:DrawableFruit x:Name="drawableFruit" />
+                        <local:DrawableSnake x:Name="drawableSnake" />
                     </GraphicsView.Drawable>
                 </GraphicsView>
-            </Border>
-            <GraphicsView WidthRequest="{Binding GameGridSize}" 
-                        HeightRequest="{Binding GameGridSize}"
-                        x:Name="snakeGraphicsView">
-                <GraphicsView.Drawable>
-                    <local:DrawableSnake x:Name="drawableSnake" />
-                </GraphicsView.Drawable>
-            </GraphicsView>
+            </Grid>
 
             <local:MainMenuContentView Grid.Row="0" 
-                                   Grid.RowSpan="2"
-                                   BindingContext="{Binding}"
-                                   IsVisible="{Binding MainMenuVisible}"/>
+                                       Grid.RowSpan="2"
+                                       BindingContext="{Binding}"
+                                       IsVisible="{Binding MainMenuVisible}"/>
 
             <local:HighScoresContentView Grid.Row="0"
                                         Grid.RowSpan="2"

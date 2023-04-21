@@ -4,6 +4,7 @@ namespace MAUI_Snake;
 
 public partial class MainPage : ContentPage
 {
+	private CancellationTokenSource cancellation = new CancellationTokenSource();
 	public MainPage()
 	{
 		InitializeComponent();
@@ -11,8 +12,13 @@ public partial class MainPage : ContentPage
 		BindingContext = vm;
 		vm.FruitChangedAction = FruitChanged;
 		vm.SnakeChangedAction = SnakeChanged;
-	}
+		vm.GameOverAction = GameOverChanged;
+    }
 
+    private void GameOverChanged()
+    {
+		cancellation.Cancel();
+    }
 
     private void SnakeChanged(List<CellViewModel> cells)
     {
@@ -23,7 +29,22 @@ public partial class MainPage : ContentPage
     private void FruitChanged(CellViewModel cell)
 	{
 		drawableFruit.Fruit = cell;
-		fruitGraphicsView.Invalidate();
+		cancellation.Cancel();
+
+		StartFruitAnimation();
+	}
+
+	private async void StartFruitAnimation()
+	{
+		cancellation = new CancellationTokenSource();
+		await Task.Factory.StartNew(() =>
+		{
+			while (!cancellation.IsCancellationRequested)
+			{
+				fruitGraphicsView.Invalidate();
+				Task.Delay(50, cancellation.Token);
+			}
+		});
 	}
 }
 

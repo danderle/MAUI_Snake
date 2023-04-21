@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MAUI_Snake"
              x:Class="MAUI_Snake.HighScoresContentView">
 
     <ContentView.Resources>
@@ -17,7 +18,8 @@
     </ContentView.Resources>
 
     <Border Background="Black"
-            Padding="20">
+            Padding="20"
+            StrokeThickness="0">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="7"
                             />
@@ -29,7 +31,6 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-
             
             <Label Text="High Scores" 
                    FontAttributes="Bold"
@@ -37,13 +38,15 @@
                    FontSize="35"
                    HorizontalOptions="Center"/>
 
-            <ListView Grid.Row="1"
+            <CollectionView Grid.Row="1"
                       ItemsSource="{Binding HighScores}">
-                <ListView.ItemTemplate>
+                <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Margin="25, 10">
+                        <Grid Margin="25, 10"
+                              VerticalOptions="Center">
                             <Entry Text="{Binding Name}" 
                                      IsReadOnly="{Binding IsOldScore}"
+                                   local:FocusBindableProperty.Focus="{Binding Focus}"
                                      Background="Black"
                                      MaxLength="3"
                                      TextColor="Green"
@@ -51,11 +54,12 @@
                             <Label Text="{Binding Score}"
                                        TextColor="Green"
                                        FontSize="20"
-                                       HorizontalOptions="End"/>
+                                       HorizontalOptions="End"
+                                   VerticalOptions="Center"/>
                         </Grid>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
             <Button Grid.Row="2" 
                     Text="Main menu" 

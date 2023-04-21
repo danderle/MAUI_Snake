@@ -17,7 +17,8 @@
     </ContentView.Resources>
 
     <Border Background="Black"
-            Padding="20">
+            Padding="20"
+            StrokeThickness="0">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="7"
                             />

@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SharpHook;
+using SharpHook.Native;
 using Snake.Core.DataModels;
 using Snake.Core.Models;
 using Snake.Core.ViewModels;
@@ -20,7 +22,7 @@ public partial class MainWindowViewModel : ObservableObject
     private const int MAX_GAME_GRID_SIZE = 400;
     private const int MAX_GAME_GRID_ROWS = 40;
     private const int MAX_GAME_GRID_COLUMNS = 40;
-    private const string HIGH_SCORES_PATH = "Resources/HighScores.json";
+    private const string HIGH_SCORES_FILENAME = "HighScores.json";
 
     private Direction _currentDirection = Direction.DOWN;
     private Queue<NextMove> _nextMoves = new Queue<NextMove>();
@@ -35,6 +37,8 @@ public partial class MainWindowViewModel : ObservableObject
     /// The size of the game grid
     /// </summary>
     public int GameGridSize => MAX_GAME_GRID_SIZE;
+
+    public string AppDataDirectory => FileSystem.Current.AppDataDirectory;
 
     /// <summary>
     /// The current score
@@ -83,6 +87,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     public Action<CellViewModel> FruitChangedAction;
     public Action<List<CellViewModel>> SnakeChangedAction;
+    public Action GameOverAction;
 
     #endregion
 
@@ -90,6 +95,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     public MainWindowViewModel()
     {
+        InitSharphook();
     }
 
     #endregion
@@ -119,7 +125,8 @@ public partial class MainWindowViewModel : ObservableObject
         MainMenuVisible = true;
 
         var jsonString = JsonSerializer.Serialize(HighScores, new JsonSerializerOptions { WriteIndented = true });
-        //File.WriteAllText(HIGH_SCORES_PATH, jsonString);
+        var highScoresPath = Path.Combine(AppDataDirectory, HIGH_SCORES_FILENAME);
+        File.WriteAllText(highScoresPath, jsonString);
     }
 
     /// <summary>
@@ -140,14 +147,65 @@ public partial class MainWindowViewModel : ObservableObject
 
     #region Methods
 
+    private async void InitSharphook()
+    {
+        var hook = new TaskPoolGlobalHook();
+        hook.KeyReleased += Hook_KeyReleased;
+
+        await hook.RunAsync();
+    }
+
+    private void Hook_KeyReleased(object sender, KeyboardHookEventArgs e)
+    {
+        int xPos = 0;
+        int yPos = 0;
+        Direction newDirecton = Direction.LEFT;
+
+        switch (e.Data.KeyCode)
+        {
+            case KeyCode.VcNumPadLeft:
+                if (_currentDirection == Direction.RIGHT && Snake.Count > 2)
+                    return;
+                xPos -= CellViewModel.CELL_SIZE;
+                newDirecton = Direction.LEFT;
+                break;
+            case KeyCode.VcNumPadUp:
+                if (_currentDirection == Direction.DOWN && Snake.Count > 2)
+                    return;
+                yPos -= CellViewModel.CELL_SIZE;
+                newDirecton = Direction.UP;
+                break;
+            case KeyCode.VcNumPadRight:
+                if (_currentDirection == Direction.LEFT && Snake.Count > 2)
+                    return;
+                xPos += CellViewModel.CELL_SIZE;
+                newDirecton = Direction.RIGHT;
+                break;
+            case KeyCode.VcNumPadDown:
+                if (_currentDirection == Direction.UP && Snake.Count > 2)
+                    return;
+                yPos += CellViewModel.CELL_SIZE;
+                newDirecton = Direction.DOWN;
+                break;
+        }
+
+        _nextMoves.Enqueue(new NextMove(xPos, yPos, newDirecton));
+    }
+
     private List<HighScoreViewModel> LoadHighScores(bool withZeros = false)
     {
         var highScores = new List<HighScoreViewModel>();
-        //var jsonString = File.ReadAllText(HIGH_SCORES_PATH);
-        //if (!string.IsNullOrEmpty(jsonString))
-        //{
-        //    highScores = JsonSerializer.Deserialize<List<HighScoreViewModel>>(jsonString);
-        //}
+        var highScoresPath = Path.Combine(AppDataDirectory, HIGH_SCORES_FILENAME);
+        var jsonString = string.Empty;
+        if (File.Exists(highScoresPath))
+        {
+            jsonString = File.ReadAllText(highScoresPath);
+
+        }
+        if (!string.IsNullOrEmpty(jsonString))
+        {
+            highScores = JsonSerializer.Deserialize<List<HighScoreViewModel>>(jsonString);
+        }
 
         if (withZeros)
         {
@@ -155,7 +213,7 @@ public partial class MainWindowViewModel : ObservableObject
             {
                 var hs = new HighScoreViewModel();
                 hs.Score = 0;
-                hs.Name = String.Empty;
+                hs.Name = string.Empty;
                 highScores.Add(hs);
             }
         }
@@ -200,6 +258,8 @@ public partial class MainWindowViewModel : ObservableObject
             SnakeChangedAction?.Invoke(Snake.ToList());
             CheckIfFruitEaten();
         }
+
+        GameOverAction?.Invoke();
 
         var highScores = LoadHighScores(true);
         var hs = new HighScoreViewModel();
@@ -246,48 +306,6 @@ public partial class MainWindowViewModel : ObservableObject
         HighScores = new ObservableCollection<HighScoreViewModel>(highScores);
         HighScoresVisible = true;
     }
-
-    ///// <summary>
-    ///// The window key up event notifies us that a key was let go
-    ///// </summary>
-    ///// <param name="sender"></param>
-    ///// <param name="e"></param>
-    //private void _window_KeyUp(object sender, KeyEventArgs e)
-    //{
-    //    int xPos = 0;
-    //    int yPos = 0;
-    //    Direction newDirecton = Direction.LEFT;
-
-    //    switch (e.Key)
-    //    {
-    //        case Key.Left:
-    //            if (_currentDirection == Direction.RIGHT && Snake.Count > 2)
-    //                return;
-    //            xPos -= CellViewModel.CELL_SIZE;
-    //            newDirecton = Direction.LEFT;
-    //            break;
-    //        case Key.Up:
-    //            if (_currentDirection == Direction.DOWN && Snake.Count > 2)
-    //                return;
-    //            yPos -= CellViewModel.CELL_SIZE;
-    //            newDirecton = Direction.UP;
-    //            break;
-    //        case Key.Right:
-    //            if (_currentDirection == Direction.LEFT && Snake.Count > 2)
-    //                return;
-    //            xPos += CellViewModel.CELL_SIZE;
-    //            newDirecton = Direction.RIGHT;
-    //            break;
-    //        case Key.Down:
-    //            if (_currentDirection == Direction.UP && Snake.Count > 2)
-    //                return;
-    //            yPos += CellViewModel.CELL_SIZE;
-    //            newDirecton = Direction.DOWN;
-    //            break;
-    //    }
-
-    //    _nextMoves.Enqueue(new NextMove(xPos, yPos, newDirecton));
-    //}
 
     /// <summary>
     /// Checks if the snake will hit a wall
