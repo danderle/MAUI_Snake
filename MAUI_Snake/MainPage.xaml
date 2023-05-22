@@ -16,6 +16,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Label Text="{Binding Score, StringFormat='Score {0}'}" 
@@ -46,13 +47,55 @@
                 </GraphicsView>
             </Grid>
 
+            <Border Grid.Row="2"
+                  HorizontalOptions="Center"
+                    Background="Black"
+                    Margin="0, -2, 0, 0"
+                    StrokeThickness="0"
+                    Padding="25"
+                  IsVisible="{Binding ShowControlButtons}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="0,0,100, 100" />
+                </Border.StrokeShape>
+                
+                <Grid >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="1"
+                        Style="{StaticResource ControlButton}"
+                        Text="{StaticResource FontAwesomeUp}" 
+                        Command="{Binding UpCommand}"/>
+                <Button Grid.Row="1"
+                        Style="{StaticResource ControlButton}"
+                        Text="{StaticResource FontAwesomeLeft}" 
+                        Command="{Binding LeftCommand}"/>
+                <Button Grid.Row="1" Grid.Column="2"
+                        Style="{StaticResource ControlButton}"
+                        Text="{StaticResource FontAwesomeRight}" 
+                        Command="{Binding RightCommand}"/>
+                <Button Grid.Row="2" Grid.Column="1"
+                        Style="{StaticResource ControlButton}"
+                        Text="{StaticResource FontAwesomeDown}" 
+                        Command="{Binding DownCommand}"/>
+            </Grid>
+            </Border>
+            
             <local:MainMenuContentView Grid.Row="0" 
-                                       Grid.RowSpan="2"
+                                       Grid.RowSpan="3"
                                        BindingContext="{Binding}"
                                        IsVisible="{Binding MainMenuVisible}"/>
 
             <local:HighScoresContentView Grid.Row="0"
-                                        Grid.RowSpan="2"
+                                        Grid.RowSpan="3"
                                         BindingContext="{Binding}"
                                         IsVisible="{Binding HighScoresVisible}"/>
 

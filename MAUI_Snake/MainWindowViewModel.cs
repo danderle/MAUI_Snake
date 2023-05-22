@@ -40,6 +40,8 @@ public partial class MainWindowViewModel : ObservableObject
 
     public string AppDataDirectory => FileSystem.Current.AppDataDirectory;
 
+    public bool ShowControlButtons { get; set; } = true;
+
     /// <summary>
     /// The current score
     /// </summary>
@@ -95,12 +97,46 @@ public partial class MainWindowViewModel : ObservableObject
 
     public MainWindowViewModel()
     {
+#if !ANDROID
         InitSharphook();
+        ShowControlButtons = false;
+#endif
     }
 
     #endregion
 
     #region Command Methods
+
+    [RelayCommand]
+    private void Up()
+    {
+        var k = new UioHookEvent();
+        k.Keyboard.KeyCode = KeyCode.VcNumPadUp;
+        Hook_KeyReleased(null, new KeyboardHookEventArgs(k));
+    }
+
+    [RelayCommand]
+    private void Left()
+    {
+        var k = new UioHookEvent();
+        k.Keyboard.KeyCode = KeyCode.VcNumPadLeft;
+        Hook_KeyReleased(null, new KeyboardHookEventArgs(k));
+    }
+
+    [RelayCommand]
+    private void Right()
+    {
+        var k = new UioHookEvent();
+        k.Keyboard.KeyCode = KeyCode.VcNumPadRight;
+        Hook_KeyReleased(null, new KeyboardHookEventArgs(k));
+    }
+    [RelayCommand]
+    private void Down()
+    {
+        var k = new UioHookEvent();
+        k.Keyboard.KeyCode = KeyCode.VcNumPadDown;
+        Hook_KeyReleased(null, new KeyboardHookEventArgs(k));
+    }
 
     /// <summary>
     /// Shows the high scores

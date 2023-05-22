@@ -4,25 +4,11 @@
              xmlns:local="clr-namespace:MAUI_Snake"
              x:Class="MAUI_Snake.HighScoresContentView">
 
-    <ContentView.Resources>
-        <Style x:Key="BasicButton" TargetType="Button">
-            <Setter Property="HorizontalOptions" Value="Center"/>
-            <Setter Property="VerticalOptions" Value="Center"/>
-            <Setter Property="Background" Value="Black"/>
-            <Setter Property="TextColor" Value="Green"/>
-            <Setter Property="BorderWidth" Value="3"/>
-            <Setter Property="BorderColor" Value="Green"/>
-            <Setter Property="FontSize" Value="25"/>
-            <Setter Property="Padding" Value="20, 5"/>
-        </Style>
-    </ContentView.Resources>
-
     <Border Background="Black"
             Padding="20"
             StrokeThickness="0">
         <Border.StrokeShape>
-            <RoundRectangle CornerRadius="7"
-                            />
+            <RoundRectangle CornerRadius="7"/>
         </Border.StrokeShape>
         
         <Grid Background="Transparent">
@@ -39,11 +25,13 @@
                    HorizontalOptions="Center"/>
 
             <CollectionView Grid.Row="1"
-                      ItemsSource="{Binding HighScores}">
+                      ItemsSource="{Binding HighScores}"
+                            WidthRequest="300">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="25, 10"
-                              VerticalOptions="Center">
+                              VerticalOptions="Center"
+                              WidthRequest="300">
                             <Entry Text="{Binding Name}" 
                                      IsReadOnly="{Binding IsOldScore}"
                                    local:FocusBindableProperty.Focus="{Binding Focus}"
